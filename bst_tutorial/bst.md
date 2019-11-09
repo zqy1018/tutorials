@@ -6,9 +6,17 @@
 
 平衡树很重要。因为会了平衡树，你就能自动资瓷下面的数据结构：
 
-1. 最大堆/最小堆（$O(\log n)$ 查找最值/删除）
-2. 可并堆（如果支持 $O(\log n)$ 的合并的话）
-3. $O(\log n)$ 插入/访问的链表（$O(\log n)$ 的分裂/合并，或者实数映射+重量平衡树）
+1. 最大堆/最小堆（
+<img src="https://www.zhihu.com/equation?tex=O(\log n)" alt="O(\log n)" class="ee_img tr_noresize" eeimg="1">
+ 查找最值/删除）
+2. 可并堆（如果支持 
+<img src="https://www.zhihu.com/equation?tex=O(\log n)" alt="O(\log n)" class="ee_img tr_noresize" eeimg="1">
+ 的合并的话）
+3. 
+<img src="https://www.zhihu.com/equation?tex=O(\log n)" alt="O(\log n)" class="ee_img tr_noresize" eeimg="1">
+ 插入/访问的链表（
+<img src="https://www.zhihu.com/equation?tex=O(\log n)" alt="O(\log n)" class="ee_img tr_noresize" eeimg="1">
+ 的分裂/合并，或者实数映射+重量平衡树）
 
 你还能资瓷一些比较高级的操作：
 
@@ -34,20 +42,42 @@
 
 1. 二叉搜索树中，节点保存的信息包括**键**（Key）和**值**（Value），但本文叙述的时候为了方便，会忽略值而只讨论键，相关程序定义中也不会出现值的定义。
 2. 为了保证代码的简洁，本文出现的所有代码都没有经过类和模板的封装，且节点都保存在**结构体数组**中，通过下标访问。
-3. 二叉搜索树性质定义为：对一个节点，设其键为 $k$，则其左子树中任意节点的键都 $\leqslant k$，右子树中任意节点的键都 $>  k$。这种定义是为了解决存在多个具有相同的键的节点的情况。当然，这种情况的解决方式还有另外几种，但本文不予讨论。
+3. 二叉搜索树性质定义为：对一个节点，设其键为 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+，则其左子树中任意节点的键都 
+<img src="https://www.zhihu.com/equation?tex=\leqslant k" alt="\leqslant k" class="ee_img tr_noresize" eeimg="1">
+，右子树中任意节点的键都 
+<img src="https://www.zhihu.com/equation?tex=>  k" alt=">  k" class="ee_img tr_noresize" eeimg="1">
+。这种定义是为了解决存在多个具有相同的键的节点的情况。当然，这种情况的解决方式还有另外几种，但本文不予讨论。
 4. 如果你觉得作者~~语文水平辣鸡，~~讲的不知所云，建议看代码来理解。
 
 ## 什么是平衡树？
 
-平衡树是二叉搜索树的一类，它是二叉搜索树的改进版本。一般二叉搜索树进行各项操作的时间复杂度都取决于树高 $h$，为 $O(h)$，但当树不平衡，$h$ 相当大时，各项操作的时间成本就可能大大提高。
+平衡树是二叉搜索树的一类，它是二叉搜索树的改进版本。一般二叉搜索树进行各项操作的时间复杂度都取决于树高 
+<img src="https://www.zhihu.com/equation?tex=h" alt="h" class="ee_img tr_noresize" eeimg="1">
+，为 
+<img src="https://www.zhihu.com/equation?tex=O(h)" alt="O(h)" class="ee_img tr_noresize" eeimg="1">
+，但当树不平衡，
+<img src="https://www.zhihu.com/equation?tex=h" alt="h" class="ee_img tr_noresize" eeimg="1">
+ 相当大时，各项操作的时间成本就可能大大提高。
 
-如果树各个叶子的深度都基本相同，那么树的高度就会趋于 $O(\log n)$，这使得各项操作变得十分高效。平衡树的主要工作，就是用各种方式，保证树的相对平衡。
+如果树各个叶子的深度都基本相同，那么树的高度就会趋于 
+<img src="https://www.zhihu.com/equation?tex=O(\log n)" alt="O(\log n)" class="ee_img tr_noresize" eeimg="1">
+，这使得各项操作变得十分高效。平衡树的主要工作，就是用各种方式，保证树的相对平衡。
 
 ![](bst_1.jpg)
 
 一般来说，平衡树节点的结构体中应当维护这些信息：左右儿子位置、键、值、子树大小。在进行一些操作后，有些信息可能会发生变化（例如多次旋转后，子树大小可能变化），这就需要我们完成操作的同时，**及时**更新相关信息。
 
-本节的最后，要澄清的一点是：对于不同的平衡树，$O(\log n)$ 的时间复杂度可能有着不同的意义，这也许代表**最坏情况下**是 $O(\log n)$，也许代表**平均意义下**是 $O(\log n)$，也许代表**均摊意义下**是 $O(\log n)$。因此，在实际使用中，针对不同类型的数据，不同平衡树之间的性能可能会有很大的差异。
+本节的最后，要澄清的一点是：对于不同的平衡树，
+<img src="https://www.zhihu.com/equation?tex=O(\log n)" alt="O(\log n)" class="ee_img tr_noresize" eeimg="1">
+ 的时间复杂度可能有着不同的意义，这也许代表**最坏情况下**是 
+<img src="https://www.zhihu.com/equation?tex=O(\log n)" alt="O(\log n)" class="ee_img tr_noresize" eeimg="1">
+，也许代表**平均意义下**是 
+<img src="https://www.zhihu.com/equation?tex=O(\log n)" alt="O(\log n)" class="ee_img tr_noresize" eeimg="1">
+，也许代表**均摊意义下**是 
+<img src="https://www.zhihu.com/equation?tex=O(\log n)" alt="O(\log n)" class="ee_img tr_noresize" eeimg="1">
+。因此，在实际使用中，针对不同类型的数据，不同平衡树之间的性能可能会有很大的差异。
 
 ## 平衡树的静态操作
 
@@ -92,14 +122,40 @@ int Lookup(int x, int k){
 
 代码的逻辑很明确：
 
-1. 如果 $k$ 等于当前节点的键，就直接返回该节点。
-2. 如果 $k$ 大于当前节点的键，就往该节点的右子树中寻找。
-3. 如果 $k$ 小于当前节点的键，就往该节点的左子树中寻找。
+1. 如果 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 等于当前节点的键，就直接返回该节点。
+2. 如果 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 大于当前节点的键，就往该节点的右子树中寻找。
+3. 如果 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 小于当前节点的键，就往该节点的左子树中寻找。
 4. 找不到就返回空节点。
 
 ### 询问某个键的排名
 
-此处，定义某个键在树中的排名为该树中的所有键中，小于该键的键个数 $+1$。如键的集合为 $\left\{1, 2, 2, 3, 4, 4\right\}$，那么 $1$ 的排名为 $1$，$2$ 的排名为 $2$，$3$ 的排名为 $4$，$4$ 的排名为 $5$。
+此处，定义某个键在树中的排名为该树中的所有键中，小于该键的键个数 
+<img src="https://www.zhihu.com/equation?tex=+1" alt="+1" class="ee_img tr_noresize" eeimg="1">
+。如键的集合为 
+<img src="https://www.zhihu.com/equation?tex=\left\{1, 2, 2, 3, 4, 4\right\}" alt="\left\{1, 2, 2, 3, 4, 4\right\}" class="ee_img tr_noresize" eeimg="1">
+，那么 
+<img src="https://www.zhihu.com/equation?tex=1" alt="1" class="ee_img tr_noresize" eeimg="1">
+ 的排名为 
+<img src="https://www.zhihu.com/equation?tex=1" alt="1" class="ee_img tr_noresize" eeimg="1">
+，
+<img src="https://www.zhihu.com/equation?tex=2" alt="2" class="ee_img tr_noresize" eeimg="1">
+ 的排名为 
+<img src="https://www.zhihu.com/equation?tex=2" alt="2" class="ee_img tr_noresize" eeimg="1">
+，
+<img src="https://www.zhihu.com/equation?tex=3" alt="3" class="ee_img tr_noresize" eeimg="1">
+ 的排名为 
+<img src="https://www.zhihu.com/equation?tex=4" alt="4" class="ee_img tr_noresize" eeimg="1">
+，
+<img src="https://www.zhihu.com/equation?tex=4" alt="4" class="ee_img tr_noresize" eeimg="1">
+ 的排名为 
+<img src="https://www.zhihu.com/equation?tex=5" alt="5" class="ee_img tr_noresize" eeimg="1">
+。
 
 该操作过程和查找类似。
 
@@ -123,16 +179,52 @@ int Get_Rank(int x, int k){
 }
 ```
 
-代码的逻辑是：用 $res$ 表示该树中的所有键中，小于 $k$ 的键个数。
+代码的逻辑是：用 
+<img src="https://www.zhihu.com/equation?tex=res" alt="res" class="ee_img tr_noresize" eeimg="1">
+ 表示该树中的所有键中，小于 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 的键个数。
 
-1. 如果 $k \leqslant$ 当前节点的键，就往该节点的左子树中寻找，不更新 $res$。
-2. 否则，就让 $res$ 加上该节点左子树的大小，再 $+1$（因为当前节点的键也小于 $k$），并在该节点的右子树中寻找。
+1. 如果 
+<img src="https://www.zhihu.com/equation?tex=k \leqslant" alt="k \leqslant" class="ee_img tr_noresize" eeimg="1">
+ 当前节点的键，就往该节点的左子树中寻找，不更新 
+<img src="https://www.zhihu.com/equation?tex=res" alt="res" class="ee_img tr_noresize" eeimg="1">
+。
+2. 否则，就让 
+<img src="https://www.zhihu.com/equation?tex=res" alt="res" class="ee_img tr_noresize" eeimg="1">
+ 加上该节点左子树的大小，再 
+<img src="https://www.zhihu.com/equation?tex=+1" alt="+1" class="ee_img tr_noresize" eeimg="1">
+（因为当前节点的键也小于 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+），并在该节点的右子树中寻找。
 
-最后返回的就是 $res+1$，即 $k$ 的排名。
+最后返回的就是 
+<img src="https://www.zhihu.com/equation?tex=res+1" alt="res+1" class="ee_img tr_noresize" eeimg="1">
+，即 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 的排名。
 
-### 询问排名为 $k$ 的键
+### 询问排名为 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 的键
 
-此处，定义排名为 $k$ 的键是：将树中的所有键从小到大排序后，序列里第 $k$ 个键。如键的集合为 $\left\{1, 2, 2, 3, 4, 4\right\}$，那么排名为 $1$ 的键为 $1$，排名为 $5$ 和 $6$ 的键都是 $4$。
+此处，定义排名为 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 的键是：将树中的所有键从小到大排序后，序列里第 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 个键。如键的集合为 
+<img src="https://www.zhihu.com/equation?tex=\left\{1, 2, 2, 3, 4, 4\right\}" alt="\left\{1, 2, 2, 3, 4, 4\right\}" class="ee_img tr_noresize" eeimg="1">
+，那么排名为 
+<img src="https://www.zhihu.com/equation?tex=1" alt="1" class="ee_img tr_noresize" eeimg="1">
+ 的键为 
+<img src="https://www.zhihu.com/equation?tex=1" alt="1" class="ee_img tr_noresize" eeimg="1">
+，排名为 
+<img src="https://www.zhihu.com/equation?tex=5" alt="5" class="ee_img tr_noresize" eeimg="1">
+ 和 
+<img src="https://www.zhihu.com/equation?tex=6" alt="6" class="ee_img tr_noresize" eeimg="1">
+ 的键都是 
+<img src="https://www.zhihu.com/equation?tex=4" alt="4" class="ee_img tr_noresize" eeimg="1">
+。
 
 该操作过程需要涉及子树大小，但大致流程和查找相同。
 
@@ -164,11 +256,31 @@ int Get_Kth(int x, int k){
 }
 ```
 
-代码的逻辑是：用 $res$ 表示排名为 $k$ 的键所在节点。每次循环先计算当前节点左儿子的子树大小，设为 $leftsize$，如果左儿子是空就记为 $0$。
+代码的逻辑是：用 
+<img src="https://www.zhihu.com/equation?tex=res" alt="res" class="ee_img tr_noresize" eeimg="1">
+ 表示排名为 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 的键所在节点。每次循环先计算当前节点左儿子的子树大小，设为 
+<img src="https://www.zhihu.com/equation?tex=leftsize" alt="leftsize" class="ee_img tr_noresize" eeimg="1">
+，如果左儿子是空就记为 
+<img src="https://www.zhihu.com/equation?tex=0" alt="0" class="ee_img tr_noresize" eeimg="1">
+。
 
-1. 如果 $k \leqslant leftsize$，就表明排名为 $k$ 的键应该在左子树中，要往左边走。
-2. 如果 $k = leftsize + 1$，就表明排名为 $k$ 的键恰好就在当前节点，于是直接记录答案、退出循环。
-3. 否则，就将问题转化为在右子树中，寻找排名为 $k-leftsize-1$ 的键（因为左子树和根占据了前 $leftsize+1$ 个排名）。
+1. 如果 
+<img src="https://www.zhihu.com/equation?tex=k \leqslant leftsize" alt="k \leqslant leftsize" class="ee_img tr_noresize" eeimg="1">
+，就表明排名为 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 的键应该在左子树中，要往左边走。
+2. 如果 
+<img src="https://www.zhihu.com/equation?tex=k = leftsize + 1" alt="k = leftsize + 1" class="ee_img tr_noresize" eeimg="1">
+，就表明排名为 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 的键恰好就在当前节点，于是直接记录答案、退出循环。
+3. 否则，就将问题转化为在右子树中，寻找排名为 
+<img src="https://www.zhihu.com/equation?tex=k-leftsize-1" alt="k-leftsize-1" class="ee_img tr_noresize" eeimg="1">
+ 的键（因为左子树和根占据了前 
+<img src="https://www.zhihu.com/equation?tex=leftsize+1" alt="leftsize+1" class="ee_img tr_noresize" eeimg="1">
+ 个排名）。
 
 ### 查找某个键的前驱/后继
 
@@ -176,12 +288,26 @@ int Get_Kth(int x, int k){
 
 定义一个键的前驱为该键所在节点的前驱的键，后继以此类推。
 
-基于搜索树性质，如果要找 $k$ 的前驱，我们可以从根节点开始，使用以下的贪心算法：
+基于搜索树性质，如果要找 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 的前驱，我们可以从根节点开始，使用以下的贪心算法：
 
-设答案为 $res$，一开始取 $res$ 为负无穷。
+设答案为 
+<img src="https://www.zhihu.com/equation?tex=res" alt="res" class="ee_img tr_noresize" eeimg="1">
+，一开始取 
+<img src="https://www.zhihu.com/equation?tex=res" alt="res" class="ee_img tr_noresize" eeimg="1">
+ 为负无穷。
 
 1. 如果当前节点为空，就停止寻找答案。
-2. 如果当前节点的键 $<k$，就令 $res$ 为当前节点的键，并在该节点右子树中寻找，意图找到比当前 $res$ 更大，但仍 $< k$ 的答案。
+2. 如果当前节点的键 
+<img src="https://www.zhihu.com/equation?tex=<k" alt="<k" class="ee_img tr_noresize" eeimg="1">
+，就令 
+<img src="https://www.zhihu.com/equation?tex=res" alt="res" class="ee_img tr_noresize" eeimg="1">
+ 为当前节点的键，并在该节点右子树中寻找，意图找到比当前 
+<img src="https://www.zhihu.com/equation?tex=res" alt="res" class="ee_img tr_noresize" eeimg="1">
+ 更大，但仍 
+<img src="https://www.zhihu.com/equation?tex=< k" alt="< k" class="ee_img tr_noresize" eeimg="1">
+ 的答案。
 3. 否则，就在该节点左子树中寻找。
 
 寻找后继使用的也是类似的策略。
@@ -237,7 +363,19 @@ int GetSuccessor(int x, int k){
 
 对于维护树的平衡，不同的平衡树给出了不同的解决方案。而替罪羊树给出的解决方案是最为“暴力”的。简而言之，就是四个字——推倒重来。意思就是，如果树不平衡了（需要一种方式度量），就把造成不平衡的子树直接拍扁（flatten），然后按照最平衡的方式——即完全二叉树的方式重建起来。
 
-在这里，判断不平衡的依据是：如果某个节点的左子树大小，或者右子树大小 $>$ 该节点的子树大小 $\times \alpha$，那么就说明该节点所在子树不平衡了，需要重构。在这里，$\alpha \in (0.5, 1)$。我们可以直观地考虑：如果取 $\alpha = 0.5$，那么要求左右两棵子树的大小严格相等，这几乎不可能实现；如果取 $\alpha = 1$，那么相当于什么限制都没设，这就是一个非常 naive 的搜索树。因此，一般情况下会折衷取 $\alpha=0.75$。
+在这里，判断不平衡的依据是：如果某个节点的左子树大小，或者右子树大小 
+<img src="https://www.zhihu.com/equation?tex=>" alt=">" class="ee_img tr_noresize" eeimg="1">
+ 该节点的子树大小 
+<img src="https://www.zhihu.com/equation?tex=\times \alpha" alt="\times \alpha" class="ee_img tr_noresize" eeimg="1">
+，那么就说明该节点所在子树不平衡了，需要重构。在这里，
+<img src="https://www.zhihu.com/equation?tex=\alpha \in (0.5, 1)" alt="\alpha \in (0.5, 1)" class="ee_img tr_noresize" eeimg="1">
+。我们可以直观地考虑：如果取 
+<img src="https://www.zhihu.com/equation?tex=\alpha = 0.5" alt="\alpha = 0.5" class="ee_img tr_noresize" eeimg="1">
+，那么要求左右两棵子树的大小严格相等，这几乎不可能实现；如果取 
+<img src="https://www.zhihu.com/equation?tex=\alpha = 1" alt="\alpha = 1" class="ee_img tr_noresize" eeimg="1">
+，那么相当于什么限制都没设，这就是一个非常 naive 的搜索树。因此，一般情况下会折衷取 
+<img src="https://www.zhihu.com/equation?tex=\alpha=0.75" alt="\alpha=0.75" class="ee_img tr_noresize" eeimg="1">
+。
 
 首先定义节点的结构体，一些全局变量和一些简单的工具函数。这里用一个结构体数组来存储树。
 
@@ -275,7 +413,11 @@ void maintain(int x){
 
 在这里，我们令“空节点”的下标为 0，也就是用 0 代表指针式写法的 `NULL`。同时令空节点的子树大小为 0，以减少对边界情况的讨论。
 
-下面解释一下函数。`init_env()` 函数中，由于初始根为空，故设为 0。`tree_new()` 函数返回的是新分配节点的下标，相当于一个构造函数。`maintain()` 函数用于重新计算 $x$ 的  `siz`，有时还会用来维护一些别的东西（如区间反转标记，等）。`is_unbalanced()` 函数用于判定一棵树 $x$ 是否不平衡。
+下面解释一下函数。`init_env()` 函数中，由于初始根为空，故设为 0。`tree_new()` 函数返回的是新分配节点的下标，相当于一个构造函数。`maintain()` 函数用于重新计算 
+<img src="https://www.zhihu.com/equation?tex=x" alt="x" class="ee_img tr_noresize" eeimg="1">
+ 的  `siz`，有时还会用来维护一些别的东西（如区间反转标记，等）。`is_unbalanced()` 函数用于判定一棵树 
+<img src="https://www.zhihu.com/equation?tex=x" alt="x" class="ee_img tr_noresize" eeimg="1">
+ 是否不平衡。
 
 然后，我们来看重构怎么做。
 
@@ -303,7 +445,9 @@ void rebuild(int &x){
 }
 ```
 
-该过程使用了一个栈 `stck` 辅助。`rebuild()` 是将以 `x` 为根的子树重构，传入引用是因为 `x` 可能是某个节点的儿子，重构完之后要改变该节点的儿子的指向。`traverse()` 是对以 `x` 为根的子树做中序遍历，回收该子树的所有节点。`divide()` 是将栈中下标 $[l, r)$ 的节点均分为左右两棵子树，并返回根的一个函数。
+该过程使用了一个栈 `stck` 辅助。`rebuild()` 是将以 `x` 为根的子树重构，传入引用是因为 `x` 可能是某个节点的儿子，重构完之后要改变该节点的儿子的指向。`traverse()` 是对以 `x` 为根的子树做中序遍历，回收该子树的所有节点。`divide()` 是将栈中下标 
+<img src="https://www.zhihu.com/equation?tex=[l, r)" alt="[l, r)" class="ee_img tr_noresize" eeimg="1">
+ 的节点均分为左右两棵子树，并返回根的一个函数。
 
 **题外话**：这里的重构并不是严格的按照完全二叉树的方法重构的，但两侧节点均分也足够平衡了。
 
@@ -425,7 +569,31 @@ int tree_new(int k){
 
 然后介绍非旋转 Treap 的核心操作。非旋转 Treap 的核心操作只有两个：分裂和合并。
 
-分裂操作分为两种：按键分裂和按数量分裂。按键分裂的功能是：给定一个键 $k$，将给定的树按照 $k$ 分割为 $x, y$ 两部分，$x$ 所有节点的键 $\leqslant k$，$y$ 所有节点的键 $> k$。按数量分裂的功能是：给定一个数 $k$，将给定的树按照 $k$ 分割为 $x, y$ 两部分，$x$ 的节点个数为 $k$。
+分裂操作分为两种：按键分裂和按数量分裂。按键分裂的功能是：给定一个键 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+，将给定的树按照 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 分割为 
+<img src="https://www.zhihu.com/equation?tex=x, y" alt="x, y" class="ee_img tr_noresize" eeimg="1">
+ 两部分，
+<img src="https://www.zhihu.com/equation?tex=x" alt="x" class="ee_img tr_noresize" eeimg="1">
+ 所有节点的键 
+<img src="https://www.zhihu.com/equation?tex=\leqslant k" alt="\leqslant k" class="ee_img tr_noresize" eeimg="1">
+，
+<img src="https://www.zhihu.com/equation?tex=y" alt="y" class="ee_img tr_noresize" eeimg="1">
+ 所有节点的键 
+<img src="https://www.zhihu.com/equation?tex=> k" alt="> k" class="ee_img tr_noresize" eeimg="1">
+。按数量分裂的功能是：给定一个数 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+，将给定的树按照 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 分割为 
+<img src="https://www.zhihu.com/equation?tex=x, y" alt="x, y" class="ee_img tr_noresize" eeimg="1">
+ 两部分，
+<img src="https://www.zhihu.com/equation?tex=x" alt="x" class="ee_img tr_noresize" eeimg="1">
+ 的节点个数为 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+。
 
 由于非旋转 Treap 满足二叉搜索树性质，故可以以递归的方式完成上述过程。
 
@@ -487,19 +655,73 @@ pair_of_int Split_K(int now, int k){
 }
 ```
 
-解释一下：两个函数都传入 2 个参数，意义是将根的下标为 $now$ 的树按照 $k$ 分割，分割的结果放在 $x, y$ 里，并以二元组形式返回。
+解释一下：两个函数都传入 2 个参数，意义是将根的下标为 
+<img src="https://www.zhihu.com/equation?tex=now" alt="now" class="ee_img tr_noresize" eeimg="1">
+ 的树按照 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 分割，分割的结果放在 
+<img src="https://www.zhihu.com/equation?tex=x, y" alt="x, y" class="ee_img tr_noresize" eeimg="1">
+ 里，并以二元组形式返回。
 
 对按值分裂，可以这么理解上面的代码：
 
-1. 如果 $now$ 为 0，那么当前要分割的是空树，$x, y$ 自然都是空的，故设为 0。
+1. 如果 
+<img src="https://www.zhihu.com/equation?tex=now" alt="now" class="ee_img tr_noresize" eeimg="1">
+ 为 0，那么当前要分割的是空树，
+<img src="https://www.zhihu.com/equation?tex=x, y" alt="x, y" class="ee_img tr_noresize" eeimg="1">
+ 自然都是空的，故设为 0。
 
-2. 如果 $now$ 的键 $\leqslant k$，那么 $now$ 及其左子树肯定要分到 $x$ 中去，接下来就对 $now$ 的右子树做分割（因为右子树里面可能有 $>k$ 的成分）。分割右子树会得到 $x_2, y_2$ 两棵树，而 $x_2$ 所有节点的键 $\leqslant k$，那么就要把它接回到 $now$ 的右子树上（因为 $x_2$ 是从 $now$ 的右子树分出来的，它的所有节点的键 $\geqslant now$ 的键） ，作为 $x$ 的一部分；$y_2$ 就作为 $y$ 返回。示意图如下：
+2. 如果 
+<img src="https://www.zhihu.com/equation?tex=now" alt="now" class="ee_img tr_noresize" eeimg="1">
+ 的键 
+<img src="https://www.zhihu.com/equation?tex=\leqslant k" alt="\leqslant k" class="ee_img tr_noresize" eeimg="1">
+，那么 
+<img src="https://www.zhihu.com/equation?tex=now" alt="now" class="ee_img tr_noresize" eeimg="1">
+ 及其左子树肯定要分到 
+<img src="https://www.zhihu.com/equation?tex=x" alt="x" class="ee_img tr_noresize" eeimg="1">
+ 中去，接下来就对 
+<img src="https://www.zhihu.com/equation?tex=now" alt="now" class="ee_img tr_noresize" eeimg="1">
+ 的右子树做分割（因为右子树里面可能有 
+<img src="https://www.zhihu.com/equation?tex=>k" alt=">k" class="ee_img tr_noresize" eeimg="1">
+ 的成分）。分割右子树会得到 
+<img src="https://www.zhihu.com/equation?tex=x_2, y_2" alt="x_2, y_2" class="ee_img tr_noresize" eeimg="1">
+ 两棵树，而 
+<img src="https://www.zhihu.com/equation?tex=x_2" alt="x_2" class="ee_img tr_noresize" eeimg="1">
+ 所有节点的键 
+<img src="https://www.zhihu.com/equation?tex=\leqslant k" alt="\leqslant k" class="ee_img tr_noresize" eeimg="1">
+，那么就要把它接回到 
+<img src="https://www.zhihu.com/equation?tex=now" alt="now" class="ee_img tr_noresize" eeimg="1">
+ 的右子树上（因为 
+<img src="https://www.zhihu.com/equation?tex=x_2" alt="x_2" class="ee_img tr_noresize" eeimg="1">
+ 是从 
+<img src="https://www.zhihu.com/equation?tex=now" alt="now" class="ee_img tr_noresize" eeimg="1">
+ 的右子树分出来的，它的所有节点的键 
+<img src="https://www.zhihu.com/equation?tex=\geqslant now" alt="\geqslant now" class="ee_img tr_noresize" eeimg="1">
+ 的键） ，作为 
+<img src="https://www.zhihu.com/equation?tex=x" alt="x" class="ee_img tr_noresize" eeimg="1">
+ 的一部分；
+<img src="https://www.zhihu.com/equation?tex=y_2" alt="y_2" class="ee_img tr_noresize" eeimg="1">
+ 就作为 
+<img src="https://www.zhihu.com/equation?tex=y" alt="y" class="ee_img tr_noresize" eeimg="1">
+ 返回。示意图如下：
 
    ![ ](some_article_1.jpg)
 
-3. 如果 $now$ 的键 $> k$，那么 $now$ 及其右子树肯定要分到 $y$ 中去，接下来就对 $now$ 的左子树做分割。之后的过程和 2 基本对称，就不叙述。
+3. 如果 
+<img src="https://www.zhihu.com/equation?tex=now" alt="now" class="ee_img tr_noresize" eeimg="1">
+ 的键 
+<img src="https://www.zhihu.com/equation?tex=> k" alt="> k" class="ee_img tr_noresize" eeimg="1">
+，那么 
+<img src="https://www.zhihu.com/equation?tex=now" alt="now" class="ee_img tr_noresize" eeimg="1">
+ 及其右子树肯定要分到 
+<img src="https://www.zhihu.com/equation?tex=y" alt="y" class="ee_img tr_noresize" eeimg="1">
+ 中去，接下来就对 
+<img src="https://www.zhihu.com/equation?tex=now" alt="now" class="ee_img tr_noresize" eeimg="1">
+ 的左子树做分割。之后的过程和 2 基本对称，就不叙述。
 
-对按数量分裂，可以类比“询问排名为 $k$ 的键”中提到的方法理解。
+对按数量分裂，可以类比“询问排名为 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 的键”中提到的方法理解。
 
 **题外话**：上面的代码可以写成下面的简洁表达，但这种写法比较难懂，故不在正文采用。
 
@@ -528,9 +750,23 @@ void Split_K(int now, int k, int &x, int &y){
 }
 ```
 
-由于非旋转 Treap 平均意义上是平衡的，该操作的时间复杂度平均意义上是 $O(\log n)$。
+由于非旋转 Treap 平均意义上是平衡的，该操作的时间复杂度平均意义上是 
+<img src="https://www.zhihu.com/equation?tex=O(\log n)" alt="O(\log n)" class="ee_img tr_noresize" eeimg="1">
+。
 
-合并操作的功能是：给定两棵树 $x, y$，保证存在 $k$，使得 $x$ 所有节点的键 $\leqslant k$，$y$ 所有节点的键 $> k$。将两者合并成为一棵树，并在合并的过程中保持堆性质和二叉搜索树性质，使得合并的结果仍是非旋转 Treap。
+合并操作的功能是：给定两棵树 
+<img src="https://www.zhihu.com/equation?tex=x, y" alt="x, y" class="ee_img tr_noresize" eeimg="1">
+，保证存在 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+，使得 
+<img src="https://www.zhihu.com/equation?tex=x" alt="x" class="ee_img tr_noresize" eeimg="1">
+ 所有节点的键 
+<img src="https://www.zhihu.com/equation?tex=\leqslant k" alt="\leqslant k" class="ee_img tr_noresize" eeimg="1">
+，
+<img src="https://www.zhihu.com/equation?tex=y" alt="y" class="ee_img tr_noresize" eeimg="1">
+ 所有节点的键 
+<img src="https://www.zhihu.com/equation?tex=> k" alt="> k" class="ee_img tr_noresize" eeimg="1">
+。将两者合并成为一棵树，并在合并的过程中保持堆性质和二叉搜索树性质，使得合并的结果仍是非旋转 Treap。
 
 该操作的实现比较简单。重点是：比较给定的两棵树的根的优先级大小，让优先级小的作为父亲。
 
@@ -551,11 +787,19 @@ int Merge(int x, int y){
 } 
 ```
 
-和分裂操作一样，需要不断更新 $now$ 的子树大小。该操作的时间复杂度平均意义上也是 $O(\log n)$。
+和分裂操作一样，需要不断更新 
+<img src="https://www.zhihu.com/equation?tex=now" alt="now" class="ee_img tr_noresize" eeimg="1">
+ 的子树大小。该操作的时间复杂度平均意义上也是 
+<img src="https://www.zhihu.com/equation?tex=O(\log n)" alt="O(\log n)" class="ee_img tr_noresize" eeimg="1">
+。
 
 有了分裂和合并，要实现一棵搜索树的功能就非常简单了——无非是分裂、合并的排列组合。
 
-插入操作：如果要插入 $k$，那么把整棵树以 $k$ 为基准做一次按值分裂，然后把新节点夹在两棵分裂的树之间再合并起来即可。
+插入操作：如果要插入 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+，那么把整棵树以 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 为基准做一次按值分裂，然后把新节点夹在两棵分裂的树之间再合并起来即可。
 
 ```cpp
 void Insert(int k){
@@ -565,9 +809,25 @@ void Insert(int k){
 }
 ```
 
-删除操作：如果要删除键为 $k$ 的节点，那么把整棵树以 $k-1$ 做一次按键分裂，分成 $x,y$ 两棵树，再做一次按数量分裂，把 $y$ 分成 $w, z$。显然 $w$ 就是要被删除的节点，因此再把 $x, z$ 两棵树合并起来就可以了。
+删除操作：如果要删除键为 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 的节点，那么把整棵树以 
+<img src="https://www.zhihu.com/equation?tex=k-1" alt="k-1" class="ee_img tr_noresize" eeimg="1">
+ 做一次按键分裂，分成 
+<img src="https://www.zhihu.com/equation?tex=x,y" alt="x,y" class="ee_img tr_noresize" eeimg="1">
+ 两棵树，再做一次按数量分裂，把 
+<img src="https://www.zhihu.com/equation?tex=y" alt="y" class="ee_img tr_noresize" eeimg="1">
+ 分成 
+<img src="https://www.zhihu.com/equation?tex=w, z" alt="w, z" class="ee_img tr_noresize" eeimg="1">
+。显然 
+<img src="https://www.zhihu.com/equation?tex=w" alt="w" class="ee_img tr_noresize" eeimg="1">
+ 就是要被删除的节点，因此再把 
+<img src="https://www.zhihu.com/equation?tex=x, z" alt="x, z" class="ee_img tr_noresize" eeimg="1">
+ 两棵树合并起来就可以了。
 
-当然，调用该函数之前必须要检查树中是否有键为 $k$ 的节点。
+当然，调用该函数之前必须要检查树中是否有键为 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 的节点。
 
 ```cpp
 bool Lookup(int k){
@@ -597,7 +857,9 @@ void Delete(int k){
 
 **题外话 3**：该数据结构（最初应该）是由某大佬在 2012 年的 WC（信息学竞赛冬令营）上介绍的，但这位大佬实际上想介绍的是利用非旋转 Treap 引申出的**可持久化平衡树**。至于可持久化是什么，简单来说就是支持**时间回溯**——数据结构每一次被修改都会产生一个新的版本，而可持久化就允许数据结构访问它的**历史版本**。根据访问等级的不同（如只读或者可读可写）可以将可持久化划分成不同的类型，感兴趣的读者可以参考 MIT 6.851 Lecture 1 的内容。
 
-**题外话 4**：还有一种拥有树和堆性质的树叫做**笛卡尔树（Cartesian tree）**，它可以通过某个数列构造出来。它具有堆的有序性，而中序遍历的结果就是原数列。如果将数列的值看作优先级，下标看作是键，那么笛卡尔树就变成了 Treap。在这里提到笛卡尔树，是因为在某些场合，需要用笛卡尔树辅助建立 Treap 以降低时间复杂度——笛卡尔树的建立可以在线性时间内完成，但用 Treap 做多次插入是 $O(n\log n)$ 级别（和堆是不是很像？）。由于篇幅限制，此处不介绍笛卡尔树的构造过程，感兴趣的读者可以在网上查找资料。
+**题外话 4**：还有一种拥有树和堆性质的树叫做**笛卡尔树（Cartesian tree）**，它可以通过某个数列构造出来。它具有堆的有序性，而中序遍历的结果就是原数列。如果将数列的值看作优先级，下标看作是键，那么笛卡尔树就变成了 Treap。在这里提到笛卡尔树，是因为在某些场合，需要用笛卡尔树辅助建立 Treap 以降低时间复杂度——笛卡尔树的建立可以在线性时间内完成，但用 Treap 做多次插入是 
+<img src="https://www.zhihu.com/equation?tex=O(n\log n)" alt="O(n\log n)" class="ee_img tr_noresize" eeimg="1">
+ 级别（和堆是不是很像？）。由于篇幅限制，此处不介绍笛卡尔树的构造过程，感兴趣的读者可以在网上查找资料。
 
 **题外话 5**：有没有旋转 Treap 呢？当然有！旋转 Treap 维持平衡依靠的也是优先级，它的旋转是用在维护堆性质上的。但由于旋转 Treap 的定位和替罪羊树基本重合了，在这里就没有提到它。感兴趣的读者可以参考《算法竞赛入门经典：训练指南》或者《数据结构与算法分析：C 语言描述》的相关章节学习 Treap。
 
@@ -605,7 +867,15 @@ void Delete(int k){
 
 1. SJTU 1221。
 
-   本题用非旋转 Treap 来做再适合不过。例如删除小于 $k$ 的所有元素操作，只要以 $k-1$ 为基准做一次按键分割，得到 $x, y$ 两棵树后，令根变为 $y$ 就行了。
+   本题用非旋转 Treap 来做再适合不过。例如删除小于 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 的所有元素操作，只要以 
+<img src="https://www.zhihu.com/equation?tex=k-1" alt="k-1" class="ee_img tr_noresize" eeimg="1">
+ 为基准做一次按键分割，得到 
+<img src="https://www.zhihu.com/equation?tex=x, y" alt="x, y" class="ee_img tr_noresize" eeimg="1">
+ 两棵树后，令根变为 
+<img src="https://www.zhihu.com/equation?tex=y" alt="y" class="ee_img tr_noresize" eeimg="1">
+ 就行了。
 
    ```cpp
    void Del_less(int k){
@@ -616,15 +886,43 @@ void Delete(int k){
 
    对于另外两种操作同理。
 
-   **题外话**：某位阿炜同学之前认为一次区间删除操作可能带来 $O(k\log n)$ 的操作成本，其中 $k$ 是被删除的节点个数。这意味着总时间复杂度达到无法承受的 $O(nm\log n)$，其中 $m$ 是树的节点总数！但实际上，本题的时间复杂度远没有这么高，为什么？
+   **题外话**：某位阿炜同学之前认为一次区间删除操作可能带来 
+<img src="https://www.zhihu.com/equation?tex=O(k\log n)" alt="O(k\log n)" class="ee_img tr_noresize" eeimg="1">
+ 的操作成本，其中 
+<img src="https://www.zhihu.com/equation?tex=k" alt="k" class="ee_img tr_noresize" eeimg="1">
+ 是被删除的节点个数。这意味着总时间复杂度达到无法承受的 
+<img src="https://www.zhihu.com/equation?tex=O(nm\log n)" alt="O(nm\log n)" class="ee_img tr_noresize" eeimg="1">
+，其中 
+<img src="https://www.zhihu.com/equation?tex=m" alt="m" class="ee_img tr_noresize" eeimg="1">
+ 是树的节点总数！但实际上，本题的时间复杂度远没有这么高，为什么？
 
 2. SJTU 4097。
 
    本题显然也是可以用非旋转 Treap 来做的。
 
-   用替罪羊树能做吗？当然也可以！我们这么考虑：用一个 $[0, 1]$ 之间的数作为链表的节点的“键”。如果要在 $a$ 和 $b$ 这两个节点之间插入节点，那就可以给这个节点新分配一个键为 $\frac{a+b}{2}$。这样，用没有区间操作的平衡树，似乎也能做出来了！
+   用替罪羊树能做吗？当然也可以！我们这么考虑：用一个 
+<img src="https://www.zhihu.com/equation?tex=[0, 1]" alt="[0, 1]" class="ee_img tr_noresize" eeimg="1">
+ 之间的数作为链表的节点的“键”。如果要在 
+<img src="https://www.zhihu.com/equation?tex=a" alt="a" class="ee_img tr_noresize" eeimg="1">
+ 和 
+<img src="https://www.zhihu.com/equation?tex=b" alt="b" class="ee_img tr_noresize" eeimg="1">
+ 这两个节点之间插入节点，那就可以给这个节点新分配一个键为 
+<img src="https://www.zhihu.com/equation?tex=\frac{a+b}{2}" alt="\frac{a+b}{2}" class="ee_img tr_noresize" eeimg="1">
+。这样，用没有区间操作的平衡树，似乎也能做出来了！
 
-   但是这个方法有一个缺陷：考虑一种极端情况，给链表设一个虚拟的头和尾，令头为 $0$，尾为 $1$，而每次插入都往头的后面插入。这样算下来，第 $n$ 次插入的节点分配到的键应当是 $2^{-n}$。而 $n$ 是 $10^5$ 的量级，这样的精度即使是 `long double` 也无法接受！
+   但是这个方法有一个缺陷：考虑一种极端情况，给链表设一个虚拟的头和尾，令头为 
+<img src="https://www.zhihu.com/equation?tex=0" alt="0" class="ee_img tr_noresize" eeimg="1">
+，尾为 
+<img src="https://www.zhihu.com/equation?tex=1" alt="1" class="ee_img tr_noresize" eeimg="1">
+，而每次插入都往头的后面插入。这样算下来，第 
+<img src="https://www.zhihu.com/equation?tex=n" alt="n" class="ee_img tr_noresize" eeimg="1">
+ 次插入的节点分配到的键应当是 
+<img src="https://www.zhihu.com/equation?tex=2^{-n}" alt="2^{-n}" class="ee_img tr_noresize" eeimg="1">
+。而 
+<img src="https://www.zhihu.com/equation?tex=n" alt="n" class="ee_img tr_noresize" eeimg="1">
+ 是 
+<img src="https://www.zhihu.com/equation?tex=10^5" alt="10^5" class="ee_img tr_noresize" eeimg="1">
+ 的量级，这样的精度即使是 `long double` 也无法接受！
    
    幸好，用替罪羊树可以避免这样的问题，因为它有着在树足够不平衡时的爆破机制，我们就可以利用这样的机制，在重建的时候将键重新分配一遍，避免极端情况的产生。在这种情况下，使用 `double` 就能成功通过。
    
