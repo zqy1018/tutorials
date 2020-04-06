@@ -1,8 +1,4 @@
-# Tutorials
-Some articles written by zqy1018.
+# Tutorials and notes
+Articles, tutorials, lecture notes, etc. 
 
-
-
-
-# 文章集合
-写的一些乱七八糟的东西。
+Some written in English. The others are in Chinese.
