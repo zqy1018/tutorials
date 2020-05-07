@@ -10,6 +10,8 @@ Lecturer: Bo Jiang
 
 ## Notes Topics
 
+(Now stop updating since there are too many notes. Will be updated in 2020.7)
+
 - [x] Notes 1: Basic Properties and Transformations About Signals (Lec 1)
 - [ ] Notes 1.5: Foundations of Complex Analysis
 - [ ] Notes 2: 
