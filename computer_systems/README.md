@@ -6,10 +6,10 @@
 
 - [x] Lecture Notes 1：绪论
 - [x] Lecture Notes 2：计算机的发展历程、计算机的性能衡量
-- [ ] Lecture Notes 3：计算机的基础部件及相互连接
+- [x] Lecture Notes 3：计算机的基础部件及相互连接
 - [x] Lecture Notes 4：支持 MIPS 指令集的 CPU 设计
-- [ ] Lecture Notes 5：存储器层次结构
-- [ ] Lecture Notes 6：I/O 设备及总线
+- [x] Lecture Notes 5：存储器层次结构
+- [x] Lecture Notes 6：I/O 设备及总线
 - [x] Lecture Notes 7：多处理器、多线程、并行
 - [ ] 复习：简答题专题
 - [ ] 复习：计算题专题
